@@ -1,29 +1,40 @@
-import openai
 import os
+import openai
+from flask import Flask, request, jsonify
+
+# Initialize the Flask application
+app = Flask(__name__)
 
 # Get OpenAI API key from environment variable
 openai.api_key = os.getenv('APIKEY')
+if not openai.api_key:
+    raise ValueError("APIKEY environment variable not set")
 
-def main(args):
-    name = args.get("name", "stranger")
-    greeting = f"Hello {name}!"
-    
-    # Use OpenAI API to generate a creative continuation
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=f"{greeting} How are you doing today?",
-        max_tokens=50
-    )
+@app.route('/greet', methods=['POST'])
+def greet():
+    try:
+        # Get JSON data from the request
+        data = request.get_json()
+        name = data.get("name", "stranger")
+        greeting = f"Hello {name}!"
 
-    # Get the generated text
-    ai_response = response.choices[0].text.strip()
-    full_message = f"{greeting} How are you doing today? {ai_response}"
-    
-    print(full_message)
-    return {"body": full_message}
+        # Use OpenAI API to generate a creative continuation
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=f"{greeting} How are you doing today?",
+            max_tokens=50
+        )
 
-# Simulate a request for testing
+        # Get the generated text
+        ai_response = response.choices[0].text.strip()
+        full_message = f"{greeting} How are you doing today? {ai_response}"
+
+        # Return the response as JSON
+        return jsonify({"body": full_message})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Run the Flask app
 if __name__ == "__main__":
-    test_args = {"name": "Alice"}  # Example input arguments
-    response = main(test_args)
-    print("Final Response:", response)
+    app.run(debug=True)
