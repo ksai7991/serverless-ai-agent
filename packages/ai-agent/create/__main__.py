@@ -14,8 +14,12 @@ def generate_text(prompt):
             max_tokens=150
         )
 
-        # Return the JSON response
-        return json.dumps(response, indent=2)
+        # Ensure the response is in JSON format
+        if 'Content-Type' in response.headers and 'application/json' in response.headers['Content-Type']:
+            response_json = response.json()
+            return json.dumps(response_json, indent=2)
+        else:
+            return json.dumps({"error": "Unexpected content type"}, indent=2)
     
     except openai.error.AuthenticationError as e:
         # Handle authentication error (e.g., invalid API key)
