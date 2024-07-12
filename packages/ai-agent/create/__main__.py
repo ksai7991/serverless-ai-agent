@@ -1,5 +1,3 @@
-sk-proj-SKDj26jUcChRCiG4O5bKT3BlbkFJbA3rWtdkV6oOpe6abBnJ
-
 import logging
 import openai
 
