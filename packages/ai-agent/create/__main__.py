@@ -4,8 +4,11 @@ import openai
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Set your OpenAI API key
-openai.api_key = 'sk-proj-SKDj26jUcChRCiG4O5bKT3BlbkFJbA3rWtdkV6oOpe6abBnJ'
+api_key = os.getenv('APIKEY')
+if not api_key:
+    raise ValueError("APIKEY environment variable not set")
+
+openai.api_key = api_key
 
 def main(args):
     try:
