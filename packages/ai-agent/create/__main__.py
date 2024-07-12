@@ -1,44 +1,26 @@
-import logging
 import openai
+import os
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-
-api_key = os.getenv('APIKEY')
-if not api_key:
-    raise ValueError("APIKEY environment variable not set")
-
-openai.api_key = api_key
+# Get OpenAI API key from environment variable
+openai.api_key = os.getenv('APIKEY')
 
 def main(args):
-    try:
-        # Log the received arguments
-        logging.info("Received arguments: %s", args)
+    name = args.get("name", "stranger")
+    greeting = f"Hello {name}!"
+    
+    # Use OpenAI API to generate a creative continuation
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=f"{greeting} How are you doing today?",
+        max_tokens=50
+    )
 
-        # Get the name from arguments or default to 'stranger'
-        name = args.get("name", "stranger")
-        greeting = f"Hello {name}!"
-
-        # Use OpenAI API to generate a creative continuation
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=f"{greeting} How are you doing today?",
-            max_tokens=50
-        )
-
-        # Get the generated text
-        ai_response = response.choices[0].text.strip()
-        full_message = f"{greeting} How are you doing today? {ai_response}"
-
-        # Log the response
-        logging.info("Response: %s", full_message)
-        print(full_message)
-
-        return {"body": full_message}
-
-    except Exception as e:
-        logging.error("Error occurred: %s", str(e))
-        return {"body": "An error occurred."}
+    # Get the generated text
+    ai_response = response.choices[0].text.strip()
+    full_message = f"{greeting} How are you doing today? {ai_response}"
+    
+    print(full_message)
+    return {"body": full_message}
 
 # Simulate a request for testing
 if __name__ == "__main__":
